@@ -1,0 +1,22 @@
+<div class="mb-5">
+  <!-- блок проверки на подпись пользователя -->
+  {% if request.user == author %}
+    <!-- нельзя подписаться самому на себя, ничего не делаем -->
+  {% elif following %}
+    <a
+        class="btn btn-lg btn-light"
+        href="{% url 'posts:profile_unfollow' author.username %}"
+        role="button"
+    >
+      Отписаться
+    </a>
+  {% else %}
+    <a
+        class="btn btn-lg btn-primary"
+        href="{% url 'posts:profile_follow' author.username %}"
+        role="button"
+    >
+      Подписаться
+    </a>
+  {% endif %}
+</div>
