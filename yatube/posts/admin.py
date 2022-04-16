@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.conf import settings
 
-from .models import Comment, Follow, Group, Post  # sorted import, added blank line
+from .models import Comment, Follow, Group, Post
 
 
 @admin.register(Post)  # added register decorator

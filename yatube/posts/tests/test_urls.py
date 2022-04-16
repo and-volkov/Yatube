@@ -105,14 +105,21 @@ class PostUrlTest(TestCase):
         self.assertTemplateUsed(author_response, self.POST_EDIT_PAGE.template)
 
     def test_non_existing_page_return_404(self):
-        """Not existing page should return 404 error"""
+        """Not existing page should return 404 error, and show custom view"""
         address = 'not_exist'
         error = 404
+        template = 'core/404.html'
 
         guest_response = self.guest_client.get(address)
         random_user_response = self.random_user_client.get(address)
         author_response = self.author_user_client.get(address)
 
+        # check error response
         self.assertEqual(guest_response.status_code, error)
         self.assertEqual(random_user_response.status_code, error)
         self.assertEqual(author_response.status_code, error)
+
+        # check custom view
+        self.assertTemplateUsed(guest_response, template)
+        self.assertTemplateUsed(random_user_response, template)
+        self.assertTemplateUsed(author_response, template)

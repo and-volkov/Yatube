@@ -437,4 +437,3 @@ class FollowTest(TestCase):
             self.FOLLOW_INDEX_PAGE)
         not_follower_index = not_follower_response.context['page_obj']
         self.assertFalse(not_follower_index)
-
