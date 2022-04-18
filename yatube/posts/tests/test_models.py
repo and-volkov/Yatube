@@ -48,8 +48,10 @@ class FollowModelTest(TestCase):
         """User can't follow himself. Follow objects count should be 0"""
         self.user_client = Client()
         self.user_client.force_login(self.user)
-        follow_page = reverse('posts:profile_follow',
-                              kwargs={'username': self.USER_NAME})
+        follow_page = reverse(
+            'posts:profile_follow',
+            kwargs={'username': self.USER_NAME}
+        )
         self.user_client.get(follow_page)
         self.assertEqual(Follow.objects.count(), 0)
 

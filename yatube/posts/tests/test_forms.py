@@ -35,12 +35,18 @@ class PostCreateFormTest(TestCase):
         )
         cls.POST_COUNT = Post.objects.count()
         cls.POST_ID = cls.post.id
-        cls.PROFILE_PAGE = reverse('posts:profile', kwargs=({
-            'username': cls.user.username}))
-        cls.POST_EDIT_PAGE = reverse('posts:post_edit',
-                                     kwargs={'post_id': cls.POST_ID})
-        cls.POST_DETAIL_PAGE = reverse('posts:post_detail',
-                                       kwargs={'post_id': cls.POST_ID})
+        cls.PROFILE_PAGE = reverse(
+                            'posts:profile',
+                            kwargs={'username': cls.user.username}
+                            )
+        cls.POST_EDIT_PAGE = reverse(
+                            'posts:post_edit',
+                            kwargs={'post_id': cls.POST_ID}
+                            )
+        cls.POST_DETAIL_PAGE = reverse(
+                            'posts:post_detail',
+                            kwargs={'post_id': cls.POST_ID}
+                            )
 
     def setUp(self):
         self.form_data = {
@@ -100,10 +106,14 @@ class CommentFormCreationTest(TestCase):
             post_id=cls.POST_ID
         )
         cls.COMMENT_COUNT = Comment.objects.count()
-        cls.POST_PAGE = reverse('posts:post_detail',
-                                kwargs={'post_id': cls.POST_ID})
-        cls.ADD_COMMENT_PAGE = reverse('posts:add_comment',
-                                       kwargs={'post_id': cls.POST_ID})
+        cls.POST_PAGE = reverse(
+                    'posts:post_detail',
+                    kwargs={'post_id': cls.POST_ID}
+                    )
+        cls.ADD_COMMENT_PAGE = reverse(
+                            'posts:add_comment',
+                            kwargs={'post_id': cls.POST_ID}
+                            )
 
     def setUp(self):
         self.comment_data = {
@@ -137,7 +147,8 @@ class CommentFormCreationTest(TestCase):
         )
         self.assertRedirects(
             guest_response,
-            f'/auth/login/?next=/posts/{self.POST_ID}/comment/')
+            f'/auth/login/?next=/posts/{self.POST_ID}/comment/'
+        )
 
 
 @override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
@@ -161,8 +172,10 @@ class PostWithImageFormTest(TestCase):
             text='Test text',
             group=cls.group
         )
-        cls.PROFILE_PAGE = reverse('posts:profile', kwargs=({
-            'username': cls.user.username}))
+        cls.PROFILE_PAGE = reverse(
+                        'posts:profile', kwargs=(
+                            {'username': cls.user.username})
+                        )
 
     @classmethod
     def tearDownClass(cls):

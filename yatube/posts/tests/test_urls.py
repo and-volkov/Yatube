@@ -14,8 +14,14 @@ class TemplateUrlTuple(NamedTuple):
 GROUP_SLUG = 'test-slug'
 
 INDEX_PAGE = TemplateUrlTuple('posts/index.html', '/')
-GROUP_PAGE = TemplateUrlTuple('posts/group_list.html', f'/group/{GROUP_SLUG}/')
-POST_CREATE_PAGE = TemplateUrlTuple('posts/create_post.html', '/create/')
+GROUP_PAGE = TemplateUrlTuple(
+    'posts/group_list.html',
+    f'/group/{GROUP_SLUG}/'
+)
+POST_CREATE_PAGE = TemplateUrlTuple(
+    'posts/create_post.html',
+    '/create/'
+)
 
 
 class PostUrlTest(TestCase):
@@ -38,13 +44,19 @@ class PostUrlTest(TestCase):
         )
         cls.POST_ID = cls.post.id
 
-        cls.AUTHOR_PROFILE_PAGE = TemplateUrlTuple('posts/profile.html',
-                                                   f'/profile/'
-                                                   f'{cls.AUTHOR_NAME}/')
-        cls.POST_PAGE = TemplateUrlTuple('posts/post_detail.html',
-                                         f'/posts/{cls.POST_ID}/')
-        cls.POST_EDIT_PAGE = TemplateUrlTuple('posts/create_post.html',
-                                              f'/posts/{cls.POST_ID}/edit/')
+        cls.AUTHOR_PROFILE_PAGE = TemplateUrlTuple(
+                                'posts/profile.html',
+                                f'/profile/'
+                                f'{cls.AUTHOR_NAME}/'
+                            )
+        cls.POST_PAGE = TemplateUrlTuple(
+                        'posts/post_detail.html',
+                        f'/posts/{cls.POST_ID}/'
+                    )
+        cls.POST_EDIT_PAGE = TemplateUrlTuple(
+                        'posts/create_post.html',
+                        f'/posts/{cls.POST_ID}/edit/'
+                    )
 
     def setUp(self):
         #  not authorized
@@ -59,11 +71,12 @@ class PostUrlTest(TestCase):
     #  Check common urls for all types of users
     def test_common_urls_uses_correct_template(self):
         """Check common urls templates usage"""
-        common_template_url_names = (INDEX_PAGE,
-                                     GROUP_PAGE,
-                                     self.AUTHOR_PROFILE_PAGE,
-                                     self.POST_PAGE
-                                     )
+        common_template_url_names = (
+                                    INDEX_PAGE,
+                                    GROUP_PAGE,
+                                    self.AUTHOR_PROFILE_PAGE,
+                                    self.POST_PAGE
+                                )
         for template, address in common_template_url_names:
             with self.subTest(address=address):
                 #  response for all types of users
@@ -78,27 +91,34 @@ class PostUrlTest(TestCase):
     def test_post_create_url_uses_template_or_redirect(self):
         """Check post create url.
         Should use template for authorized user or redirect for guest user"""
-        guest_response = self.guest_client.get(POST_CREATE_PAGE.address,
-                                               follow=True)
+        guest_response = self.guest_client.get(
+                                            POST_CREATE_PAGE.address,
+                                            follow=True
+                                        )
         random_user_response = self.random_user_client.get(
-            POST_CREATE_PAGE.address)
+                                                    POST_CREATE_PAGE.address)
         author_response = self.author_user_client.get(POST_CREATE_PAGE.address)
 
         self.assertRedirects(guest_response, '/auth/login/?next=/create/')
-        self.assertTemplateUsed(random_user_response,
-                                POST_CREATE_PAGE.template)
+        self.assertTemplateUsed(
+            random_user_response,
+            POST_CREATE_PAGE.template
+        )
         self.assertTemplateUsed(author_response, POST_CREATE_PAGE.template)
 
     def test_post_edit_url_uses_template_or_redirect(self):
         """Check post edit url.
         Should use template for author or redirect for random, guest user"""
-        guest_response = self.guest_client.get(self.POST_EDIT_PAGE.address,
-                                               follow=True)
+        guest_response = self.guest_client.get(
+                                        self.POST_EDIT_PAGE.address,
+                                        follow=True
+                                    )
         random_user_response = self.random_user_client.get(
-            self.POST_EDIT_PAGE.address,
-            follow=True)
+                                                self.POST_EDIT_PAGE.address,
+                                                follow=True
+                                            )
         author_response = self.author_user_client.get(
-            self.POST_EDIT_PAGE.address)
+                                                self.POST_EDIT_PAGE.address)
 
         self.assertRedirects(guest_response, f'/posts/{self.POST_ID}/')
         self.assertRedirects(random_user_response, f'/posts/{self.POST_ID}/')

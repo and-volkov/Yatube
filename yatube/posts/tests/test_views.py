@@ -29,26 +29,31 @@ POSTS_PER_PAGE = settings.POSTS_PER_PAGE
 FIRST_GROUP_SLUG = 'test-slug-1'
 SECOND_GROUP_SLUG = 'test-slug-2'
 INDEX_PAGE = TemplateReverseName('posts/index.html', reverse('posts:index'))
-POST_CREATE_PAGE = TemplateReverseName('posts/create_post.html',
-                                       reverse('posts:post_create'))
+POST_CREATE_PAGE = TemplateReverseName(
+                'posts/create_post.html',
+                reverse('posts:post_create')
+                )
 FIRST_GROUP_PAGE = TemplateReverseName(
-    'posts/group_list.html',
-    reverse('posts:group_list',
-            kwargs={
-                'slug': FIRST_GROUP_SLUG})
-)
+                'posts/group_list.html',
+                reverse(
+                    'posts:group_list',
+                    kwargs={'slug': FIRST_GROUP_SLUG}
+                    )
+                )
 SECOND_GROUP_PAGE = TemplateReverseName(
-    'posts/group_list.html',
-    reverse('posts:group_list',
-            kwargs={
-                'slug': SECOND_GROUP_SLUG})
-)
+                'posts/group_list.html',
+                reverse(
+                    'posts:group_list',
+                    kwargs={'slug': SECOND_GROUP_SLUG}
+                    )
+                )
 PROFILE_PAGE = TemplateReverseName(
-    'posts/profile.html',
-    reverse('posts:profile',
-            kwargs={
-                'username':
-                    USER_NAME}))
+            'posts/profile.html',
+            reverse(
+                'posts:profile',
+                kwargs={'username': USER_NAME}
+                )
+            )
 
 
 class PostViewsTest(TestCase):
@@ -72,28 +77,32 @@ class PostViewsTest(TestCase):
             )
         cls.FIRST_POST_ID = Post.objects.first().id
         cls.POST_DETAIL_PAGE = TemplateReverseName(
-            'posts/post_detail.html',
-            reverse('posts:post_detail',
-                    kwargs={
-                        'post_id': cls.FIRST_POST_ID})
-        )
+                        'posts/post_detail.html',
+                        reverse(
+                            'posts:post_detail',
+                            kwargs={'post_id': cls.FIRST_POST_ID}
+                            )
+                        )
         cls.POST_EDIT_PAGE = TemplateReverseName(
-            'posts/create_post.html',
-            reverse('posts:post_edit',
-                    kwargs={
-                        'post_id': cls.FIRST_POST_ID})
-        )
+                        'posts/create_post.html',
+                        reverse(
+                            'posts:post_edit',
+                            kwargs={'post_id': cls.FIRST_POST_ID}
+                            )
+                        )
 
     def setUp(self):
         self.authorized_client = Client()
         self.authorized_client.force_login(self.user)
         # Tuple with all pages
-        self.ALL_PAGES = (INDEX_PAGE,
-                          FIRST_GROUP_PAGE,
-                          PROFILE_PAGE,
-                          self.POST_DETAIL_PAGE,
-                          POST_CREATE_PAGE,
-                          self.POST_EDIT_PAGE)
+        self.ALL_PAGES = (
+            INDEX_PAGE,
+            FIRST_GROUP_PAGE,
+            PROFILE_PAGE,
+            self.POST_DETAIL_PAGE,
+            POST_CREATE_PAGE,
+            self.POST_EDIT_PAGE
+        )
 
     #  Check used templates
     def test_pages_use_correct_template(self):
@@ -113,9 +122,11 @@ class PostViewsTest(TestCase):
     def test_index_page_show_correct_context(self):
         """index post formed with correct context"""
         response = self.authorized_client.get(INDEX_PAGE.reverse_name)
+
         first_object = response.context['page_obj'][0]
         post_text = first_object.text
         post_author = first_object.author.username
+
         self.assertEqual(post_text, 'Test text')
         self.assertEqual(post_author, self.user.username)
 
@@ -123,10 +134,12 @@ class PostViewsTest(TestCase):
     def test_group_list_page_show_correct_context(self):
         """Group page formed with correct context"""
         response = self.authorized_client.get(FIRST_GROUP_PAGE.reverse_name)
+
         first_object = response.context['page_obj'][0]
         group_title = first_object.group.title
         group_description = first_object.group.description
         group_slug = first_object.group.slug
+
         self.assertEqual(group_title, 'Test group')
         self.assertEqual(group_description, 'Test description')
         self.assertEqual(group_slug, FIRST_GROUP_SLUG)
@@ -135,18 +148,22 @@ class PostViewsTest(TestCase):
     def test_profile_page_show_correct_context(self):
         """Profile page formed with correct context"""
         response = self.authorized_client.get(PROFILE_PAGE.reverse_name)
+
         first_object = response.context['page_obj'][0]
         profile_author = first_object.author.username
+
         self.assertEqual(profile_author, self.user.username)
 
     # Test context for post_detail page
     def test_post_detail_page_show_correct_context(self):
         """Post_detail page formed with correct context"""
         response = self.authorized_client.get(
-            self.POST_DETAIL_PAGE.reverse_name)
+                                        self.POST_DETAIL_PAGE.reverse_name)
+
         detail_post = response.context.get('post')
         post_detail_post_count = response.context.get('post_count')
         post_detail_title = response.context.get('title')
+
         self.assertEqual(detail_post, Post.objects.get(pk=self.FIRST_POST_ID))
         self.assertEqual(post_detail_post_count, self.POSTS_COUNT)
         self.assertEqual(
@@ -185,22 +202,27 @@ class PostViewsTest(TestCase):
     def test_pages_paginator(self):
         """Pages paginator shows 10 posts per page"""
         # Pages with paginator
-        pages = [INDEX_PAGE.template,
-                 FIRST_GROUP_PAGE.template,
-                 PROFILE_PAGE.template]
+        pages = [
+            INDEX_PAGE.template,
+            FIRST_GROUP_PAGE.template,
+            PROFILE_PAGE.template
+        ]
         # Test first page
         for template, page in self.ALL_PAGES:
             if template in pages:
                 with self.subTest(page=page):
                     # First page contains 10 posts
                     response = self.authorized_client.get(page)
-                    self.assertEqual(len(response.context['page_obj']),
-                                     POSTS_PER_PAGE)
+                    self.assertEqual(
+                        len(response.context['page_obj']),
+                        POSTS_PER_PAGE
+                    )
                     # Second page contains 3 posts
                     response = self.authorized_client.get(page + '?page=2')
-                    self.assertEqual(len(response.context['page_obj']),
-                                     self.POSTS_COUNT
-                                     - POSTS_PER_PAGE)
+                    self.assertEqual(
+                        len(response.context['page_obj']),
+                        self.POSTS_COUNT - POSTS_PER_PAGE
+                    )
 
 
 class PostCreationTest(TestCase):
@@ -234,23 +256,27 @@ class PostCreationTest(TestCase):
     # Check post with group created at correct pages
     def test_post_created_at_correct_pages(self):
         """New post created at correct pages"""
-        pages = [INDEX_PAGE.reverse_name,
-                 FIRST_GROUP_PAGE.reverse_name,
-                 PROFILE_PAGE.reverse_name]
+        pages = [
+            INDEX_PAGE.reverse_name,
+            FIRST_GROUP_PAGE.reverse_name,
+            PROFILE_PAGE.reverse_name
+        ]
         for page in pages:
             response = self.authorized_client.get(page)
             post = response.context['page_obj'][0]
+
             self.assertEqual(post.pk, self.POST_ID)
 
     # Check post not in empty group
     def test_post_created_at_correct_group_page(self):
         """New post at correct group page"""
         post_page_response = self.authorized_client.get(
-            FIRST_GROUP_PAGE.reverse_name)
+                                                FIRST_GROUP_PAGE.reverse_name)
         second_group_page_response = self.authorized_client.get(
-            SECOND_GROUP_PAGE.reverse_name)
+                                                SECOND_GROUP_PAGE.reverse_name)
         post_page = post_page_response.context['page_obj']
         second_group_page = second_group_page_response.context['page_obj']
+
         self.assertNotEqual(post_page, second_group_page)
 
 
@@ -287,11 +313,12 @@ class PostWithImageTest(TestCase):
         )
         cls.FIRST_POST_ID = Post.objects.first().id
         cls.POST_DETAIL_PAGE = TemplateReverseName(
-            'posts/post_detail.html',
-            reverse('posts:post_detail',
-                    kwargs={
-                        'post_id': cls.FIRST_POST_ID})
-        )
+                                    'posts/post_detail.html',
+                                    reverse(
+                                        'posts:post_detail',
+                                        kwargs={'post_id': cls.FIRST_POST_ID}
+                                        )
+                                    )
 
     @classmethod
     def tearDownClass(cls):
@@ -343,18 +370,22 @@ class CacheTest(TestCase):
         """Deleted post should be kept in cache until cache is cleared"""
         post = Post.objects.get(pk=self.POST_ID)
         response_before_delete = self.guest_client.get(
-            INDEX_PAGE.reverse_name)
+                                                INDEX_PAGE.reverse_name)
         post.delete()
         # save content after post delete for test
         response_after_delete = self.guest_client.get(
-            INDEX_PAGE.reverse_name)
-        self.assertEqual(response_before_delete.content,
-                         response_after_delete.content)
+                                                INDEX_PAGE.reverse_name)
+        self.assertEqual(
+            response_before_delete.content,
+            response_after_delete.content
+        )
         cache.clear()
         response_cache_cleared = self.guest_client.get(
-            INDEX_PAGE.reverse_name)
-        self.assertNotEqual(response_after_delete.content,
-                            response_cache_cleared.content)
+                                                INDEX_PAGE.reverse_name)
+        self.assertNotEqual(
+            response_after_delete.content,
+            response_cache_cleared.content
+        )
 
 
 class FollowTest(TestCase):
@@ -386,12 +417,18 @@ class FollowTest(TestCase):
         )
 
         cls.FOLLOW_INDEX_PAGE = reverse('posts:follow_index')
-        cls.FOLLOW_PAGE = reverse('posts:profile_follow',
-                                  kwargs={'username': cls.AUTHOR_NAME})
-        cls.UNFOLLOW_PAGE = reverse('posts:profile_unfollow',
-                                    kwargs={'username': cls.AUTHOR_NAME})
-        cls.AUTHOR_PAGE = reverse('posts:profile',
-                                  kwargs={'username': cls.AUTHOR_NAME})
+        cls.FOLLOW_PAGE = reverse(
+            'posts:profile_follow',
+            kwargs={'username': cls.AUTHOR_NAME}
+        )
+        cls.UNFOLLOW_PAGE = reverse(
+            'posts:profile_unfollow',
+            kwargs={'username': cls.AUTHOR_NAME}
+        )
+        cls.AUTHOR_PAGE = reverse(
+            'posts:profile',
+            kwargs={'username': cls.AUTHOR_NAME}
+        )
 
     def setUp(self):
         # log follower
@@ -421,9 +458,11 @@ class FollowTest(TestCase):
         """guest user should be redirected to login page"""
         self.guest_client = Client()
         guest_response = self.guest_client.get(self.FOLLOW_PAGE)
-        self.assertRedirects(guest_response,
-                             f'/auth/login/?next=/profile/'
-                             f'{self.AUTHOR_NAME}/follow/')
+        self.assertRedirects(
+            guest_response,
+            f'/auth/login/?next=/profile/'
+            f'{self.AUTHOR_NAME}/follow/'
+        )
 
     def test_follow_index_page(self):
         """follow index page should have 1 post for follower
@@ -434,6 +473,6 @@ class FollowTest(TestCase):
         self.assertTrue(follower_index)
         # check not follower
         not_follower_response = self.not_follower_client.get(
-            self.FOLLOW_INDEX_PAGE)
+                                                        self.FOLLOW_INDEX_PAGE)
         not_follower_index = not_follower_response.context['page_obj']
         self.assertFalse(not_follower_index)
