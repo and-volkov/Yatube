@@ -64,13 +64,11 @@ def profile(request, username):
 def post_detail(request, post_id):
     template = 'posts/post_detail.html'
     post = Post.objects.get(pk=post_id)
-    post_count = Post.objects.filter(author=post.author).count()
     title = f'Пост {post.text[:30]}'
     comments = Comment.objects.filter(post_id=post_id)
     form = CommentForm()
-    context = {
+    context = {  # post_count теперь в шаблоне
         'post': post,
-        'post_count': post_count,
         'title': title,
         'comments': comments,
         'form': form
@@ -82,7 +80,7 @@ def post_detail(request, post_id):
 def post_create(request):
     template = 'posts/create_post.html'
     form = PostForm(request.POST or None,
-                    files=request.FILES or None,)  # Pre-init form
+                    files=request.FILES or None,)
     if request.method == 'POST' and form.is_valid():
         form.text = form.cleaned_data['text']
         form.group = form.cleaned_data['group']
@@ -98,7 +96,7 @@ def post_edit(request, post_id):
     instance = Post.objects.get(id=post_id)
     form = PostForm(request.POST or None,
                     instance=instance,
-                    files=request.FILES or None)  # Pre-init form
+                    files=request.FILES or None)
     if request.user.id == instance.author_id:
         if request.method == 'POST' and form.is_valid():
             form.text = form.cleaned_data['text']
