@@ -175,6 +175,7 @@ class PostWithImageFormTest(TestCase):
         self.post_count = Post.objects.count()
 
     def test_create_post_form_with_image(self):
+        """Should create new post with image"""
         small_gif = (
             b'\x47\x49\x46\x38\x39\x61\x02\x00'
             b'\x01\x00\x80\x00\x00\x00\x00\x00'
@@ -204,4 +205,32 @@ class PostWithImageFormTest(TestCase):
                 text='Test text',
                 image='posts/small.gif'
             ).exists()
+        )
+
+    # Added test for not image file
+    def test_bad_file_not_uploading(self):
+        """shouldn't create new post with broken file"""
+        not_gif = (
+            b'Random stuff'
+        )
+        uploaded = SimpleUploadedFile(
+            name='not_gif.gif',
+            content=not_gif,
+            content_type='image/gif'
+        )
+        form_data = {
+            'text': 'Test text',
+            'image': uploaded,
+        }
+        self.authorized_client.post(
+            POST_CREATE_PAGE,
+            data=form_data,
+            follow=True
+        )
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertFalse(
+            Post.objects.filter(
+                text='Test text',
+                image='posts/not_gif.gif'
+            )
         )
