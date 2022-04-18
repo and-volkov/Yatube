@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import CheckConstraint, UniqueConstraint, Q, F
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -93,3 +94,10 @@ class Follow(models.Model):
         verbose_name = 'Подписки'
         verbose_name_plural = 'Подписки'
         unique_together = ('user', 'author')
+
+        constraints = (
+            CheckConstraint(
+                check=(~Q(author=F('user'))),
+                name='user__neq__author'
+            ),
+        )
