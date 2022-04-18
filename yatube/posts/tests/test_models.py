@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
-from django.test import TestCase
+from django.urls import reverse
+from django.test import Client, TestCase
 
-from ..models import Group, Post
+from ..models import Comment, Follow, Group, Post
 
 GROUP_SLUG = 'test-slug'
 
@@ -31,3 +32,35 @@ class PostModelTest(TestCase):
         expected_group_str = group.title
         self.assertEqual(expected_post_str, str(post))
         self.assertEqual(expected_group_str, str(group))
+
+
+class FollowModelTest(TestCase):
+    USER_NAME = 'User'
+    AUTHOR_NAME = 'Author'
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create_user(username=cls.USER_NAME)
+        cls.author = User.objects.create_user(username=cls.AUTHOR_NAME)
+
+    def test_user_cant_follow_himself(self):
+        """User can't follow himself. Follow objects count should be 0"""
+        self.user_client = Client()
+        self.user_client.force_login(self.user)
+        follow_page = reverse('posts:profile_follow',
+                              kwargs={'username': self.USER_NAME})
+        self.user_client.get(follow_page)
+        self.assertEqual(Follow.objects.count(), 0)
+
+    def test_follow_object_unique(self):
+        """Check follow objects have different pk"""
+        first_object = Follow.objects.create(
+            user=self.user,
+            author=self.author
+        )
+        second_object = Follow.objects.create(
+            user=self.author,
+            author=self.user
+        )
+        self.assertNotEqual(first_object.pk, second_object.pk)
