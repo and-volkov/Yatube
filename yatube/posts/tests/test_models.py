@@ -55,8 +55,8 @@ class FollowModelTest(TestCase):
         response = self.user_client.get(follow_page)
         self.assertEqual(Follow.objects.count(), 0)
         self.assertRedirects(response, reverse(
-                                'posts:profile',
-                                kwargs={'username': self.USER_NAME})
+            'posts:profile',
+            kwargs={'username': self.USER_NAME})
                              )
 
     def test_follow_object_unique(self):

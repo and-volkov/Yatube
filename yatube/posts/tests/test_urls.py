@@ -45,18 +45,18 @@ class PostUrlTest(TestCase):
         cls.POST_ID = cls.post.id
 
         cls.AUTHOR_PROFILE_PAGE = TemplateUrlTuple(
-                                'posts/profile.html',
-                                f'/profile/'
-                                f'{cls.AUTHOR_NAME}/'
-                            )
+            'posts/profile.html',
+            f'/profile/'
+            f'{cls.AUTHOR_NAME}/'
+        )
         cls.POST_PAGE = TemplateUrlTuple(
-                        'posts/post_detail.html',
-                        f'/posts/{cls.POST_ID}/'
-                    )
+            'posts/post_detail.html',
+            f'/posts/{cls.POST_ID}/'
+        )
         cls.POST_EDIT_PAGE = TemplateUrlTuple(
-                        'posts/create_post.html',
-                        f'/posts/{cls.POST_ID}/edit/'
-                    )
+            'posts/create_post.html',
+            f'/posts/{cls.POST_ID}/edit/'
+        )
 
     def setUp(self):
         #  not authorized
@@ -72,11 +72,11 @@ class PostUrlTest(TestCase):
     def test_common_urls_uses_correct_template(self):
         """Check common urls templates usage"""
         common_template_url_names = (
-                                    INDEX_PAGE,
-                                    GROUP_PAGE,
-                                    self.AUTHOR_PROFILE_PAGE,
-                                    self.POST_PAGE
-                                )
+            INDEX_PAGE,
+            GROUP_PAGE,
+            self.AUTHOR_PROFILE_PAGE,
+            self.POST_PAGE
+        )
         for template, address in common_template_url_names:
             with self.subTest(address=address):
                 #  response for all types of users
@@ -92,11 +92,11 @@ class PostUrlTest(TestCase):
         """Check post create url.
         Should use template for authorized user or redirect for guest user"""
         guest_response = self.guest_client.get(
-                                            POST_CREATE_PAGE.address,
-                                            follow=True
-                                        )
+            POST_CREATE_PAGE.address,
+            follow=True
+        )
         random_user_response = self.random_user_client.get(
-                                                    POST_CREATE_PAGE.address)
+            POST_CREATE_PAGE.address)
         author_response = self.author_user_client.get(POST_CREATE_PAGE.address)
 
         self.assertRedirects(guest_response, '/auth/login/?next=/create/')
@@ -110,15 +110,15 @@ class PostUrlTest(TestCase):
         """Check post edit url.
         Should use template for author or redirect for random, guest user"""
         guest_response = self.guest_client.get(
-                                        self.POST_EDIT_PAGE.address,
-                                        follow=True
-                                    )
+            self.POST_EDIT_PAGE.address,
+            follow=True
+        )
         random_user_response = self.random_user_client.get(
-                                                self.POST_EDIT_PAGE.address,
-                                                follow=True
-                                            )
+            self.POST_EDIT_PAGE.address,
+            follow=True
+        )
         author_response = self.author_user_client.get(
-                                                self.POST_EDIT_PAGE.address)
+            self.POST_EDIT_PAGE.address)
 
         self.assertRedirects(guest_response, f'/posts/{self.POST_ID}/')
         self.assertRedirects(random_user_response, f'/posts/{self.POST_ID}/')
