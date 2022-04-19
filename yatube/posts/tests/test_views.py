@@ -161,11 +161,9 @@ class PostViewsTest(TestCase):
             self.POST_DETAIL_PAGE.reverse_name)
 
         detail_post = response.context.get('post')
-        post_detail_post_count = response.context.get('post_count')
         post_detail_title = response.context.get('title')
 
         self.assertEqual(detail_post, Post.objects.get(pk=self.FIRST_POST_ID))
-        self.assertEqual(post_detail_post_count, self.POSTS_COUNT)
         self.assertEqual(
             post_detail_title,
             f'Пост {Post.objects.get(pk=self.FIRST_POST_ID).text[:30]}'
