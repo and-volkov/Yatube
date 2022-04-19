@@ -57,7 +57,7 @@ class FollowModelTest(TestCase):
         self.assertRedirects(response, reverse(
             'posts:profile',
             kwargs={'username': self.USER_NAME})
-                        )
+        )
 
     def test_follow_object_unique(self):
         """Check follow objects have different pk"""
