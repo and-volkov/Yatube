@@ -13,7 +13,6 @@ import tempfile
 from ..models import Follow, Group, Post
 from ..forms import PostForm
 
-
 # For temp images
 TEMP_MEDIA_ROOT = tempfile.mkdtemp(dir=settings.BASE_DIR)
 
@@ -30,30 +29,31 @@ FIRST_GROUP_SLUG = 'test-slug-1'
 SECOND_GROUP_SLUG = 'test-slug-2'
 INDEX_PAGE = TemplateReverseName('posts/index.html', reverse('posts:index'))
 POST_CREATE_PAGE = TemplateReverseName(
-                'posts/create_post.html',
-                reverse('posts:post_create')
-                )
+    'posts/create_post.html',
+    reverse(
+        'posts:post_create')
+)
 FIRST_GROUP_PAGE = TemplateReverseName(
-                'posts/group_list.html',
-                reverse(
-                    'posts:group_list',
-                    kwargs={'slug': FIRST_GROUP_SLUG}
-                    )
-                )
+    'posts/group_list.html',
+    reverse(
+        'posts:group_list',
+        kwargs={'slug': FIRST_GROUP_SLUG}
+    )
+)
 SECOND_GROUP_PAGE = TemplateReverseName(
-                'posts/group_list.html',
-                reverse(
-                    'posts:group_list',
-                    kwargs={'slug': SECOND_GROUP_SLUG}
-                    )
-                )
+    'posts/group_list.html',
+    reverse(
+        'posts:group_list',
+        kwargs={'slug': SECOND_GROUP_SLUG}
+    )
+)
 PROFILE_PAGE = TemplateReverseName(
-            'posts/profile.html',
-            reverse(
-                'posts:profile',
-                kwargs={'username': USER_NAME}
-                )
-            )
+    'posts/profile.html',
+    reverse(
+        'posts:profile',
+        kwargs={'username': USER_NAME}
+    )
+)
 
 
 class PostViewsTest(TestCase):
@@ -77,19 +77,19 @@ class PostViewsTest(TestCase):
             )
         cls.FIRST_POST_ID = Post.objects.first().id
         cls.POST_DETAIL_PAGE = TemplateReverseName(
-                        'posts/post_detail.html',
-                        reverse(
-                            'posts:post_detail',
-                            kwargs={'post_id': cls.FIRST_POST_ID}
-                            )
-                        )
+            'posts/post_detail.html',
+            reverse(
+                'posts:post_detail',
+                kwargs={'post_id': cls.FIRST_POST_ID}
+            )
+        )
         cls.POST_EDIT_PAGE = TemplateReverseName(
-                        'posts/create_post.html',
-                        reverse(
-                            'posts:post_edit',
-                            kwargs={'post_id': cls.FIRST_POST_ID}
-                            )
-                        )
+            'posts/create_post.html',
+            reverse(
+                'posts:post_edit',
+                kwargs={'post_id': cls.FIRST_POST_ID}
+            )
+        )
 
     def setUp(self):
         self.authorized_client = Client()
@@ -158,7 +158,7 @@ class PostViewsTest(TestCase):
     def test_post_detail_page_show_correct_context(self):
         """Post_detail page formed with correct context"""
         response = self.authorized_client.get(
-                                        self.POST_DETAIL_PAGE.reverse_name)
+            self.POST_DETAIL_PAGE.reverse_name)
 
         detail_post = response.context.get('post')
         post_detail_post_count = response.context.get('post_count')
@@ -271,9 +271,9 @@ class PostCreationTest(TestCase):
     def test_post_created_at_correct_group_page(self):
         """New post at correct group page"""
         post_page_response = self.authorized_client.get(
-                                                FIRST_GROUP_PAGE.reverse_name)
+            FIRST_GROUP_PAGE.reverse_name)
         second_group_page_response = self.authorized_client.get(
-                                                SECOND_GROUP_PAGE.reverse_name)
+            SECOND_GROUP_PAGE.reverse_name)
         post_page = post_page_response.context['page_obj']
         second_group_page = second_group_page_response.context['page_obj']
 
@@ -313,12 +313,12 @@ class PostWithImageTest(TestCase):
         )
         cls.FIRST_POST_ID = Post.objects.first().id
         cls.POST_DETAIL_PAGE = TemplateReverseName(
-                                    'posts/post_detail.html',
-                                    reverse(
-                                        'posts:post_detail',
-                                        kwargs={'post_id': cls.FIRST_POST_ID}
-                                        )
-                                    )
+            'posts/post_detail.html',
+            reverse(
+                'posts:post_detail',
+                kwargs={'post_id': cls.FIRST_POST_ID}
+            )
+        )
 
     @classmethod
     def tearDownClass(cls):
@@ -370,18 +370,18 @@ class CacheTest(TestCase):
         """Deleted post should be kept in cache until cache is cleared"""
         post = Post.objects.get(pk=self.POST_ID)
         response_before_delete = self.guest_client.get(
-                                                INDEX_PAGE.reverse_name)
+            INDEX_PAGE.reverse_name)
         post.delete()
         # save content after post delete for test
         response_after_delete = self.guest_client.get(
-                                                INDEX_PAGE.reverse_name)
+            INDEX_PAGE.reverse_name)
         self.assertEqual(
             response_before_delete.content,
             response_after_delete.content
         )
         cache.clear()
         response_cache_cleared = self.guest_client.get(
-                                                INDEX_PAGE.reverse_name)
+            INDEX_PAGE.reverse_name)
         self.assertNotEqual(
             response_after_delete.content,
             response_cache_cleared.content
@@ -473,6 +473,6 @@ class FollowTest(TestCase):
         self.assertTrue(follower_index)
         # check not follower
         not_follower_response = self.not_follower_client.get(
-                                                        self.FOLLOW_INDEX_PAGE)
+            self.FOLLOW_INDEX_PAGE)
         not_follower_index = not_follower_response.context['page_obj']
         self.assertFalse(not_follower_index)
