@@ -16,7 +16,11 @@ handler403 = 'core.views.permission_denied'
 handler403csrf = 'core.views.csrf_failure'
 handler500 = 'core.views.server_error'
 
+
 if settings.DEBUG:
+    import debug_toolbar
     urlpatterns += static(
         settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
     )
+
+    urlpatterns += (path('__debug__/', include(debug_toolbar.urls)),)
