@@ -155,3 +155,7 @@ sent emails/
 # media folder
 media/
 .media/
+
+.github
+.github/
+/.github/
