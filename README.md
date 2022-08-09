@@ -11,7 +11,7 @@
 
 Скопируйте репозиторий.
 ```sh
-git clone https://github.com/
+git clone https://github.com/and-volkov/Yatube.git
 ```
 Установите и активируйте виртуальное окружение.
 ```sh
